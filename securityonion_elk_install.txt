@@ -1,0 +1,268 @@
+Security Onion with ELK
+
+# Guide requires Ubuntu 14.04 and Security Onion installed and setup
+# to install Security Onion on a custom Ubuntu 14.04 run these commands
+
+echo "debconf debconf/frontend select noninteractive" | sudo debconf-set-selections
+sudo apt-get -y install software-properties-common
+sudo add-apt-repository -y ppa:securityonion/stable
+sudo apt-get update
+sudo apt-get -y install securityonion-all syslog-ng-core securityonion-onionsalt
+
+# Then you will need to run sosetup twice to setup Security Onion
+
+[Install] - Install Security Onion then proceed with the steps below
+sudo soup -y
+sudo apt-get install open-vm-tools -y (or install vmware tools)
+
+[Setup] - Run Setup (This is a shortcut on the Security Onion desktop)
+- Setup a standalone server before moving on with this guide
+- Do not do the evaluation mode as we want to use suricata instead of snort.
+- The reason for this is Suricata supports native logging to json
+
+RECOMMENDED OPTIONS - not required but this is the settings I recommend
+eth0 as management port
+Static for POC or DHCP for traveling laptops
+Yes, configure monitor interfaces
+Set eth1 as monitor interface
+Yes, make changes
+Yes, reboot!
+
+After reboot, run Setup again
+Yes, continue
+Yes, skip network configuraiton!
+Production Mode
+Standalone
+Custom
+Set username to whatever you would like
+Set password to whatever you would like
+30 days for Sguil database
+7 days for DAYSTOREPAIR
+Suricata for IDS Engine		- IMPORTANT
+Emerging Threats GPL	(or sign up for a Personal Snort VRT license and set to Snort VRT ruleset and Emergeing Threats NoGPL ruleset if doing a POC.  This costs $29.99 a year but is illegal to run in production)
+4096 for PF_RING (if POCing on large network increase this)
+Monitor interface to eth1
+Yes, enable IDS engine
+Yes, enable Bro!
+Yes, enable file extraction!
+No, disable http_agent.
+No, disable argus.
+Your choice on PRADS.  I typically disable.
+Yes, enable full packet capture!
+150 for pcap size
+Yes, enable nmap I/O!
+64 for laptop or 256 for busy network on ring buffer
+Disk percentage 90 unless you are sending tremendous amounts of data in which case might consider 75 or 80
+No, disable salt (enable if you are doing a master with sensor installation)
+No, disable ELSA.
+Yes, proceed with the changes!
+
+END RECOMMEND OPTIONS
+
+sudo add-apt-repository -y ppa:webupd8team/java
+sudo apt-get update
+sudo dpkg-reconfigure debconf 				HUMAN INTERACTION - Set to dialogue
+sudo apt-get -y install oracle-java8-installer		HUMAN INTERACTION - accept license agreement
+
+
+BEGIN HUMAN INTERACTION
+[Add Java to Path]
+sudo vi /etc/profile
+
+Add these lines to the bottom:	
+
+JAVA_HOME=/usr/lib/jvm/java-8-oracle
+PATH=$PATH:$HOME/bin:$JAVA_HOME/bin
+
+Save the file
+END HUMAN INTERACTION
+
+JAVA_HOME=/usr/lib/jvm/java-8-oracle
+PATH=$PATH:$HOME/bin:$JAVA_HOME/bin
+export JAVA_HOME
+export JRE_HOME
+export PATH
+
+wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.1/elasticsearch-2.4.1.deb
+wget https://download.elastic.co/logstash/logstash/packages/debian/logstash-2.4.0_all.deb
+wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+wget https://download.elastic.co/kibana/kibana/kibana-4.6.2-amd64.deb
+
+sudo mkdir /usr/local/share/GeoIP
+cd /usr/local/share/GeoIP
+sudo wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+sudo wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+sudo wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
+sudo wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
+sudo wget http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
+sudo gunzip *.gz
+cd ~
+wget https://nxlog.co/system/files/products/files/1/nxlog-ce_2.9.1716_ubuntu_1404_amd64.deb
+sudo dpkg -i nxlog-ce_2.9.1716_ubuntu_1404_amd64.deb
+sudo dpkg -i kibana-4.6.2-amd64.deb
+sudo dpkg -i elasticsearch-2.4.1.deb
+sudo dpkg -i logstash-2.4.0_all.deb
+
+
+sudo apt-get -y install python-pip
+sudo pip install elasticsearch-curator
+sudo /usr/share/elasticsearch/bin/plugin install lmenezes/elasticsearch-kopf
+sudo /opt/logstash/bin/logstash-plugin install logstash-filter-translate
+sudo /opt/logstash/bin/logstash-plugin install logstash-filter-tld
+sudo /opt/logstash/bin/logstash-plugin install logstash-filter-elasticsearch
+sudo /opt/logstash/bin/logstash-plugin install logstash-filter-rest
+sudo /opt/kibana/bin/kibana plugin --install elastic/sense
+sudo /opt/kibana/bin/kibana plugin --install prelert_swimlane_vis -u https://github.com/prelert/kibana-swimlane-vis/archive/v0.1.0.tar.gz
+cd ~
+git clone https://github.com/oxalide/kibana_metric_vis_colors.git
+sudo apt-get install zip -y
+zip -r kibana_metric_vis_colors kibana_metric_vis_colors
+
+# MANUAL INTERACTION -> change /home/user to the path you are currently in
+sudo /opt/kibana/bin/kibana plugin --install metric-vis-colors -u file:///home/user/kibana_metric_vis_colors.zip
+
+sudo /opt/kibana/bin/kibana plugin -i kibana-slider-plugin -u https://github.com/raystorm-place/kibana-slider-plugin/releases/download/v0.0.2/kibana-slider-plugin-v0.0.2.tar.gz
+sudo /opt/kibana/bin/kibana plugin --install elastic/timelion
+sudo /opt/kibana/bin/kibana plugin -i kibana-html-plugin -u https://github.com/raystorm-place/kibana-html-plugin/releases/download/v0.0.3/kibana-html-plugin-v0.0.3.tar.gz
+
+sudo mkdir /opt/freq
+cd /opt/freq
+sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/freq.py
+sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/freq_server.py
+sudo chmod +x *.py
+sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/english_lowercase.freq
+sudo wget https://github.com/MarkBaggett/MarkBaggett/raw/master/freq/english_mixedcase.freq
+sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/dns.freq
+sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/file.freq
+sudo wget https://github.com/SMAPPER/Logstash-Configs/raw/master/configfiles-setup_required/freq/uri.freq
+
+
+BEGIN HUMAN INTERACTION
+using sudo gedit or sudo vi edit /etc/nsm/[Hostname-eth[interface#]]/suricata.yaml - NOTE: You cannot use a tab in the configuration file
+
+Set enabled to yes (This is right under eve-log)
+
+[Optional settings for suricata.yaml]
+Uncomment payload printable 
+Set xff enabled to yes
+Set files force-magic and force-md5 to yes
+Comment line for Bidirectional Flow
+Uncomment Unidirectional netflow
+Uncomment smtp extended to yes
+END HUMAN INTERACTION
+
+sudo nsm --all --restart
+
+sudo vi /etc/elasticsearch/elasticsearch.yml
+
+Uncomment network.host and set it to:
+network.host 0.0.0.0
+Uncomment cluster.name: and set it to:
+cluster.name: research
+
+If elasticsearch is going to be ran as a single server then add the below line to the bottom of /etc/elasticsearch/elasticsearch.yaml
+index.number_of_replicas: 0
+
+sudo update-rc.d elasticsearch defaults
+sudo update-rc.d logstash defaults
+sudo update-rc.d kibana defaults
+
+# Install logstash configurations
+Switch all configs to come from git
+sudo apt-get install git -y
+cd ~
+git clone https://github.com/SMAPPER/Logstash-Configs.git
+sudo cp -rf Logstash-Configs/configfiles/*.conf /etc/logstash/conf.d/
+sudo cp -rf Logstash-Configs/dictionaries /lib/
+sudo cp -rf Logstash-Configs/grok-patterns /lib/
+sudo cp -rf Logstash-Configs/configfiles-setup_required/8*.conf /etc/logstash/conf.d/
+
+# Finish setting up frequency analysis service
+sudo cp -rf ~/Logstash-Configs/configfiles-setup_required/freq/freq.sh /opt/freq/
+sudo chmod +x /opt/freq/freq.sh
+sudo cp -rf ~/Logstash-Configs/configfiles-setup_required/freq/freq /etc/init.d/
+sudo chmod +x /etc/init.d/freq
+sudo update-rc.d freq defaults
+sudo service freq start
+
+sudo service elasticsearch restart
+sudo service kibana restart
+
+sudo iptables -t nat -A PREROUTING -p tcp --dport 514 -j REDIRECT --to-port 1514
+sudo su
+iptables-save > /etc/iptables.rules
+exit
+
+sudo vi /etc/network/interfaces
+
+# MANUAL INTERACTION
+Add the below line to the management NIC
+pre-up iptables-restore < /etc/iptables.rules
+
+To manually run Logstash (testing and troubleshooting) run:
+/opt/logstash/bin/logstash -f /etc/logstash/conf.d/
+
+BEGIN HUMAN INTERACTION
+You will need to modify /etc/logstash/conf.d/suricata.conf to point to the location of eve.json on your system which is /etc/nsm/hostname-interface/eve.json
+You will need to modify /etc/logstash/conf.d/bro_http.conf to point to the bro http file located in /nsm/bro/logs/current.  If you are using a monitor interface of eth1 as this guide uses then change the path => line from http.log to http_eth1.log
+END HUMAN INTERACTION
+
+# Feel free to also look at any other Logstash config files found on https://github.com/SMAPPER/Logstash-Configs 
+# and download them to the /etc/logstash/conf.d directory to make them active
+
+sudo service elasticsearch start
+sudo service kibana start
+sudo service logstash start
+
+# If you rerun security onion setup you will need to rerun these ufw commands as well as renable the suricata.yaml settings
+sudo ufw allow 9200/tcp
+sudo ufw allow 5601/tcp
+sudo ufw allow 15672/tcp
+sudo ufw allow 443/tcp
+
+Access Kibana from http://[ip_address]:5601
+Access Elasticsearch from http://[ip_address]:9200    (add /_plugin/kopf to access kopf)
+
+To manually run Logstash (testing and troubleshooting) run:
+/opt/logstash/bin/logstash -f /etc/logstash/conf.d/
+
+# Setup NXLog config file (nxlog feeds data into Logstash)
+sudo cp -f ~/Logstash-Configs/nxlog.conf -f /etc/nxlog/nxlog.conf
+sudo service nxlog restart
+
+
+
+
+NOTES
+
+NEED TO DO:
+
+Write script to replay all samples in /opt/samples/
+
+REMOVE PASSWORD LOGGING
+
+
+If on SSD do this:
+
+Replace sda with the name of your hard drive in the commands below
+
+echo noop > /sys/block/sda/queue/scheduler
+
+edit /etc/rc.local and add this command before exit 0 (echo noop > /sys/block/sda/queue/scheduler)
+
+
+Also run this in Sense:
+
+PUT /_cluster/settings
+{
+    "persistent" : {
+        "indices.store.throttle.max_bytes_per_sec" : "100mb"
+    }
+}
+
+PUT /_cluster/settings
+{
+    "transient" : {
+        "indices.store.throttle.type" : "none" 
+    }
+}
