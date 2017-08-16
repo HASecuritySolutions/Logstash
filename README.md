@@ -8,7 +8,7 @@ Key directories and what they are can be found below:
 **configfiles-setup-required** - This directory contains Logstash configuration files that require additional software or changes to be made to the configuration files.
 **configfiles-OPTIONAL** - This directory contains optional Logstash configuration files as some organizations may not want the features they introduce but are worth consideration.
 
-##Key contributors
+## Key contributors
 
 These folks have made significant contributions to this repository. This can be in the form of contributing Logstash configuration files, testing, or providing valueable insights and ideas.
 
