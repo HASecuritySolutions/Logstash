@@ -12,9 +12,9 @@ Key directories and what they are can be found below:
 
 These folks have made significant contributions to this repository. This can be in the form of contributing Logstash configuration files, testing, or providing valueable insights and ideas.
 
-**Justin Henderson** - Co-founder and principal consultant of H & A Security Solutions, GSE, and author of SEC555: SIEM with Tactical Analytics and co-author of SEC455: SIEM Design and Architecture
-**Josh Awalt** - Co-Founder of H & A Security Solutions
-**Josh Johnson** - Consultant of H & A Security Solutions, GSE, and just plain awesome!
-**Austin Taylor** - Consultant of H & A Security Solutions, soon to be GSE, and course author of multiple big data analytics courses!
-**John Hubbard** - Co-author of SEC455: SIEM Design and Architecture
-**Shaun McCullough** - Consultant of H & A Security Solution, GSE, and community enthusiast!
+- **Justin Henderson** - Co-founder and principal consultant of H & A Security Solutions, GSE, and author of SEC555: SIEM with Tactical Analytics and co-author of SEC455: SIEM Design and Architecture
+- **Josh Awalt** - Co-Founder of H & A Security Solutions
+- **Josh Johnson** - Consultant of H & A Security Solutions, GSE, and just plain awesome!
+- **Austin Taylor** - Consultant of H & A Security Solutions, soon to be GSE, and course author of multiple big data analytics courses!
+- **John Hubbard** - Co-author of SEC455: SIEM Design and Architecture
+- **Shaun McCullough** - Consultant of H & A Security Solution, GSE, and community enthusiast!
