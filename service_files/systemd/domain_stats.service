@@ -1,0 +1,15 @@
+[Unit]
+Description=domain_stats
+After=docker.service
+Requires=docker.service
+
+[Service]
+ExecStartPre=/usr/bin/docker stop domain_stats
+ExecStartPre=/usr/bin/docker rm domain_stats
+ExecStart=/usr/bin/docker run -d -p 20000:20000 --name domain_stats lightforge/domain_stats
+ExecStop=/usr/bin/docker stop -t 2 domain_stats
+Restart=always
+LimitNOFILE=16384
+
+[Install]
+WantedBy=local.target
