@@ -29,7 +29,7 @@ winlogbeat.event_logs:
   - name: Microsoft-Windows-PowerShell/Operational
     ignore_older: 72h
    - name: Windows PowerShell
-    event_id: 400,600
+    event_id: 400,600,800
     ignore_older: 72h
   - name: Microsoft-Windows-WMI-Activity/Operational
     event_id: 5857,5858,5859,5860,5861
@@ -41,8 +41,6 @@ winlogbeat.event_logs:
   - name: Microsoft-Windows-TerminalServices-LocalSessionManager/Admin
     ignore_older: 72h
   - name: Microsoft-Windows-TerminalServices-LocalSessionManager/Operational
-    ignore_older: 72h
-  - name: Microsoft-Windows-GroupPolicy/Operational
     ignore_older: 72h
   - name: Microsoft-Windows-GroupPolicy/Operational
     ignore_older: 72h
