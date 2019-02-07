@@ -1,0 +1,63 @@
+<QueryList>
+  <Query Id="0" Path="Security">
+    <Select Path="Security">*</Select>
+  </Query>
+  <Query Id="1" Path="Application">
+    <Select Path="Application">*</Select>
+  </Query>
+  <Query Id="2" Path="System">
+    <Select Path="System">*</Select>
+  </Query>
+  <Query Id="3" Path="Microsoft-Windows-Sysmon/Operational">
+    <Select Path="Microsoft-Windows-Sysmon/Operational">*</Select>
+  </Query>
+  <Query Id="4" Path="Microsoft-Windows-PowerShell/Operational">
+    <Select Path="Microsoft-Windows-PowerShell/Operational">*</Select>
+  </Query>
+  <Query Id="5" Path="Windows PowerShell">
+    <Select Path="Windows PowerShell">*[System[EventID=400]] or *[System[EventID=600]] or *[System[EventID=800]]</Select>
+  </Query>
+  <Query Id="6" Path="Microsoft-Windows-WMI-Activity/Operational">
+    <Select Path="Microsoft-Windows-WMI-Activity/Operational">*[System[EventID=5857]] or *[System[EventID=5858]] or *[System[EventID=5859]] or *[System[EventID=5860]] or *[System[EventID=5861]]</Select>
+  </Query>
+  <Query Id="7" Path="Microsoft-Windows-TaskScheduler/Operational">
+    <Select Path="Microsoft-Windows-TaskScheduler/Operational">*</Select>
+  </Query>
+  <Query Id="8" Path="Microsoft-Windows-TerminalServices-RDPClient/Operational">
+    <Select Path="Microsoft-Windows-TerminalServices-RDPClient/Operational">*</Select>
+  </Query>
+  <Query Id="9" Path="Microsoft-Windows-TerminalServices-LocalSessionManager/Admin">
+    <Select Path="Microsoft-Windows-TerminalServices-LocalSessionManager/Admin">*</Select>
+  </Query>
+  <Query Id="10" Path="Microsoft-Windows-TerminalServices-LocalSessionManager/Operational">
+    <Select Path="Microsoft-Windows-TerminalServices-LocalSessionManager/Operational">*</Select>
+  </Query>
+  <Query Id="11" Path="Microsoft-Windows-GroupPolicy/Operational">
+    <Select Path="Microsoft-Windows-GroupPolicy/Operational">*</Select>
+  </Query>
+  <Query Id="12" Path="Microsoft-Windows-DriverFrameworks-UserMode/Operational">
+    <Select Path="Microsoft-Windows-DriverFrameworks-UserMode/Operational">*[System[EventID=2003]] or *[System[EventID=2004]] or *[System[EventID=2102]]</Select>
+  </Query>
+  <Query Id="13" Path="Microsoft-Windows-AppLocker/EXE and DLL">
+    <Select Path="Microsoft-Windows-AppLocker/EXE and DLL">*</Select>
+    <Select Path="Microsoft-Windows-AppLocker/MSI and Script">*</Select>
+  </Query>
+  <Query Id="14" Path="Microsoft-Windows-AppLocker/Packaged app-Execution">
+    <Select Path="Microsoft-Windows-AppLocker/Packaged app-Execution">*</Select>
+  </Query>
+  <Query Id="15" Path="Microsoft-Windows-AppLocker/Packaged app-Deployment">
+    <Select Path="Microsoft-Windows-AppLocker/Packaged app-Deployment">*</Select>
+  </Query>
+  <Query Id="16" Path="Microsoft-Windows-SmartCard-Audit/Authentication">
+    <Select Path="Microsoft-Windows-SmartCard-Audit/Authentication">*</Select>
+  </Query>
+  <Query Id="17" Path="Microsoft-Windows-SMBClient/Operational">
+    <!-- get all UNC/mapped drive successful connection -->
+    <Select Path="Microsoft-Windows-SMBClient/Operational">*[System[(EventID=30622 or EventID=30624)]]</Select>
+  </Query>
+   <Query Id="41" Path="Microsoft-Windows-Windows Defender/Operational">
+    <!-- Modern Windows Defender event provider Detection events (1006-1009) and (1116-1119) -->
+    <Select Path="Microsoft-Windows-Windows Defender/Operational">*[System[( (EventID &gt;= 1006 and EventID &lt;= 1009) )]]</Select>
+    <Select Path="Microsoft-Windows-Windows Defender/Operational">*[System[( (EventID &gt;= 1116 and EventID &lt;= 1119) )]]</Select>
+  </Query>
+</QueryList>
