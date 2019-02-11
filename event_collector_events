@@ -55,7 +55,7 @@
     <!-- get all UNC/mapped drive successful connection -->
     <Select Path="Microsoft-Windows-SMBClient/Operational">*[System[(EventID=30622 or EventID=30624)]]</Select>
   </Query>
-   <Query Id="41" Path="Microsoft-Windows-Windows Defender/Operational">
+  <Query Id="41" Path="Microsoft-Windows-Windows Defender/Operational">
     <!-- Modern Windows Defender event provider Detection events (1006-1009) and (1116-1119) -->
     <Select Path="Microsoft-Windows-Windows Defender/Operational">*[System[( (EventID &gt;= 1006 and EventID &lt;= 1009) )]]</Select>
     <Select Path="Microsoft-Windows-Windows Defender/Operational">*[System[( (EventID &gt;= 1116 and EventID &lt;= 1119) )]]</Select>
