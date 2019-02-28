@@ -62,6 +62,7 @@ processors:
     - equals.event_id: 4656 
     - equals.event_id: 36887 # A handle to an object was requested
     - equals.event_id: 4658 # The handle to an object was closed
+    - equals.event_id: 4688 # Sysmon event ID 1 is better
     - equals.event_id: 5663 # An attempt was made to access an object
     - equals.event_id: 5158 # Filter out Windows Firewall has allowed local bind
     - equals.event_id: 5154 # Filter out Windows Firewall has allowed a port
