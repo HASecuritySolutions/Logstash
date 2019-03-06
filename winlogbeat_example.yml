@@ -28,7 +28,7 @@ winlogbeat.event_logs:
     ignore_older: 72h
   - name: Microsoft-Windows-PowerShell/Operational
     ignore_older: 72h
-   - name: Windows PowerShell
+  - name: Windows PowerShell
     event_id: 400,600,800
     ignore_older: 72h
   - name: Microsoft-Windows-WMI-Activity/Operational
