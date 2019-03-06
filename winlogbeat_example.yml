@@ -75,78 +75,10 @@ processors:
     - equals.event_id: 8 # Filter out Create Remote Thread
     - equals.event_id: 5140 # Filter out a network object was accessed
     - equals.event_id: 600 # Filter out a process was assigned a primary token
-    - equals.event_id: 5158 #Filter out new listening ports events
-    - contains.event_data: "255.255.255.255" #Drop broadcast traffic
-    - contains.event_data: "224.0.0" #Drop multicast traffic
-    - contains.event_data: "239.255.255.250" #Drop multicast traffic
-    - contains.event_data: "SeSystemtimePrivilege" # Drop Time Privilege events
-    - contains.event_data: "SeBackupPrivilege" # Drop SeBackupPrivilege until users are not admins
-    - contains.event_data: "SeCreateGlobalPrivilege" #Drop SeCreateGlobalPrivilege use
-    - contains.event_data: "CoreNet-Teredo-In" # Drop CoreNet-Teredo-In rule failures as it is going to happen
-    - contains.event_data: "CoreNet-IPHTTPS-In" # Drop CoreNet-IPHTTPS-In rule failures as it is going to happen
-    - contains.event_data: "ntp" # Drop ntp related application logs
-    - contains.event_data: "PrintIsolationHost" # Drop Sysmon PrintIsolationHost related application logs
-    - contains.event_data: "esif_assist" #  Drop intel NIC sysmon events
   - drop_event.when.and:
-    - equals.event_id: 5158 
-    - contains.event_data: "chrome" #Drop chrome logs
-  - drop_event.when.and:
-    - equals.event_id: 5154 
-    - contains.event_data: "System" #Drop System listening port logs
-  - drop_event.when.and:
-    - equals.event_id: 5154 
-    - contains.event_data: "lsass" #Drop lsass listening port logs	
-  - drop_event.when.and:
-    - equals.event_id: 5154 
-    - contains.event_data: "winit" #Drop system listening port logs
-  - drop_event.when.and:
-    - equals.event_id: 5154 
-    - contains.event_data: "services" #Drop system listening port logs
-  - drop_event.when.and:
-    - equals.event_id: 5154 
-    - contains.event_data: "teamviewer" #Drop system listening port logs
-  - drop_event.when.and:
-    - equals.event_id: 5154 
-    - contains.event_data: "mdnsresponder" #Drop system listening port logs
-  - drop_event.when.and:
-    - equals.event_id: 3 
-    - contains.event_data: "F5" #Drop network connection logs
-  - drop_event.when.and:
-    - equals.event_id: 3 
-    - contains.event_data: "dfsrs" #Drop network connection logs
-  - drop_event.when.and:
-    - equals.event_id: 3 
-    - contains.event_data: "apache" #Drop network connection logs
-  - drop_event.when.and:
-    - equals.event_id: 3 
-    - contains.event_data: "mDNSResponder" #Drop network connection logs
-  - drop_event.when.and:
-    - equals.event_id: 3 
-    - contains.event_data: "Lync" #Drop network connection logs
-  - drop_event.when.and:
-    - equals.event_id: 3 
-    - contains.event_data: "w3wp" #Drop network connection logs
-  - drop_event.when.and:
-    - equals.event_id: 3 
-    - contains.event_data: "TeamViewer" #Drop network connection logs
-  - drop_event.when.and:
-    - equals.event_id: 3 
-    - contains.event_data: "taskhost" #Drop network connection logs
-  - drop_event.when.and:
-    - equals.event_id: 3 
-    - contains.event_data: "SQL" #Drop network connection logs
-  - drop_event.when.and:
-    - equals.event_id: 3 
-    - contains.event_data: "EMET" #Drop network connection logs
-  - drop_event.when.and:
-    - equals.event_id: 3 
-    - contains.event_data: "Skype" #Drop network connection logs
-  - drop_event.when.and:
-    - equals.event_id: 3 
-    - contains.event_data: "Exchange" #Drop network connection logs
-  - drop_event.when.and:
-    - equals.event_id: 3 
-    - contains.event_data: "dfssvc" #Drop network connection logs
+    - equals.event_id: 5858
+    - not.equals.user_data.resultcode: "0x80041010"
+    - not.equals.user_data.resultcode: "0x80041003"
   - drop_event.when.and:
     - equals.event_id: 4624
     - contains.event_data.TargetUserName: "appbatch" # Drop Service Account Logons
@@ -189,7 +121,7 @@ processors:
 #----------------------------- Logstash output --------------------------------
 output.logstash:
   # The Logstash hosts
-  hosts: ["logstash01:5045","logstash02:5045","logstash03:5045"]
+  hosts: ["logstash01:5045","logstash02:5045"]
   loadbalance: true
 
   # Optional SSL. By default is off.
