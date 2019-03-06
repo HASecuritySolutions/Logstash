@@ -1,0 +1,114 @@
+###################### Winlogbeat Configuration Example ##########################
+
+# This file is an example configuration file highlighting only the most common
+# options. The winlogbeat.full.yml file from the same directory contains all the
+# supported options with more comments. You can use it as a reference.
+#
+# You can find the full configuration reference here:
+# https://www.elastic.co/guide/en/beats/winlogbeat/index.html
+
+#======================= Winlogbeat specific options ==========================
+
+# event_logs specifies a list of event logs to monitor as well as any
+# accompanying options. The YAML data type of event_logs is a list of
+# dictionaries.
+#
+# The supported keys are name (required), tags, fields, fields_under_root,
+# forwarded, ignore_older, level, event_id, provider, and include_xml. Please
+# visit the documentation for the complete details of each option.
+# https://go.es.io/WinlogbeatConfig
+  
+winlogbeat.event_logs:
+  - name: ForwardedEvents
+    ignore_older: 72h
+
+
+processors:
+  - drop_event.when.or:
+    - equals.event_id: 5156 # Filter out Windows Firewall has allowed a connection
+    - equals.event_id: 5145 # Filter out network share object access check
+    - equals.event_id: 16 # Filter out counter could not be modified
+    - equals.event_id: 4656 
+    - equals.event_id: 36887 # A handle to an object was requested
+    - equals.event_id: 4658 # The handle to an object was closed
+    - equals.event_id: 5663 # An attempt was made to access an object
+    - equals.event_id: 5158 # Filter out Windows Firewall has allowed local bind
+    - equals.event_id: 5154 # Filter out Windows Firewall has allowed a port
+    - equals.event_id: 4985 # Filter out Windows state of a transaction has changed
+    - equals.event_id: 560 # Filter out Object Access
+    - equals.event_id: 562 # Filter out Handle Closed
+    - equals.event_id: 578 # Filter out Privilege object operation
+    - equals.event_id: 861 # Filter out Windows Firewall has detected an application listening for incoming traffic
+    - equals.event_id: 567 # Filter out Object accesss attempt
+    - equals.event_id: 8 # Filter out Create Remote Thread
+    - equals.event_id: 5140 # Filter out a network object was accessed
+    - equals.event_id: 600 # Filter out a process was assigned a primary token
+  - drop_event.when.and:
+    - equals.event_id: 5858
+    - not.equals.user_data.resultcode: "0x80041010"
+    - not.equals.user_data.resultcode: "0x80041003"
+  - drop_event.when.and:
+    - equals.event_id: 4624
+    - contains.event_data.TargetUserName: "appbatch" # Drop Service Account Logons
+  - drop_event.when.and:
+    - equals.event_id: 4624
+    - contains.event_data.TargetUserName: "VmwareView" # Drop Service Account Logons
+  - drop_event.when.and:
+    - equals.event_id: 4624
+    - contains.event_data.TargetUserName: "RemoteControlGateway" # Drop Service Account Logons
+#================================ General =====================================
+
+# The name of the shipper that publishes the network data. It can be used to group
+# all the transactions sent by a single shipper in the web interface.
+#name:
+
+# The tags of the shipper are included in their own field with each
+# transaction published.
+#tags: ["service-X", "web-tier"]
+
+# Optional fields that you can specify to add additional information to the
+# output.
+#fields:
+#  env: staging
+
+#================================ Outputs =====================================
+
+# Configure what outputs to use when sending the data collected by the beat.
+# Multiple outputs may be used.
+
+#-------------------------- Elasticsearch output ------------------------------
+#output.elasticsearch:
+  # Array of hosts to connect to.
+  #hosts: ["elasticsearch:9200"]
+
+  # Optional protocol and basic auth credentials.
+  #protocol: "https"
+  #username: "elastic"
+  #password: "changeme"
+
+#----------------------------- Logstash output --------------------------------
+output.logstash:
+  # The Logstash hosts
+  hosts: ["logstash01:5045","logstash02:5045"]
+  loadbalance: true
+
+  # Optional SSL. By default is off.
+  # List of root certificates for HTTPS server verifications
+  #ssl.certificate_authorities: ["/etc/pki/root/ca.pem"]
+
+  # Certificate for SSL client authentication
+  #ssl.certificate: "/etc/pki/client/cert.pem"
+
+  # Client Certificate Key
+  #ssl.key: "/etc/pki/client/cert.key"
+
+#================================ Logging =====================================
+
+# Sets log level. The default log level is info.
+# Available log levels are: critical, error, warning, info, debug
+#logging.level: debug
+
+# At debug level, you can selectively enable logging only for some components.
+# To enable all selectors use ["*"]. Examples of other selectors are "beat",
+# "publish", "service".
+#logging.selectors: ["*"]
